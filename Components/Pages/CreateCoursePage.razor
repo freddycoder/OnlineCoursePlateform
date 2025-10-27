@@ -1,0 +1,134 @@
+@using System.Text.Json
+@using Azure
+@using Azure.AI.OpenAI
+@using OnlineLearningPlatform.Models
+@using OpenAI.Chat
+@using OnlineCoursPlateforme.Utils
+@inject IConfiguration Configuration
+
+@page "/create-course"
+
+<h3 class="page-title">Créer un cours</h3>
+
+<div class="creator-grid">
+    <div class="prompt-panel">
+        <label class="label">Écrivez votre prompt :</label>
+        <textarea @bind="Prompt" placeholder="Décrivez le cours : public cible, objectifs, durée, ton, format..." class="prompt-box"></textarea>
+        <div class="controls">
+            <button class="btn go" @onclick="Main" disabled="@(createCourseTask != null && createCourseTask?.Status != TaskStatus.Running)">Go</button>
+            <button class="btn cancel" @onclick="Cancel" disabled="@(createCourseTask != null && createCourseTask?.Status == TaskStatus.Running)">Annuler</button>
+            <button class="btn clear" @onclick="Clear" disabled="@(Logs.Length > 0)">Effacer</button>
+        </div>
+        <div class="hint">Astuce : détaillez le public, objectifs, durée et le style pédagogique pour de meilleurs résultats.</div>
+    </div>
+
+    <div class="stream-panel">
+        <div class="stream-header">
+            <strong>Progression & interactions</strong>
+            <div class="status">
+                @if (createCourseTask?.Status == TaskStatus.Running)
+                {
+                    <span class="dot running"></span> <span>En cours...</span>
+                }
+                else if (createCourseTask?.IsCompletedSuccessfully == true)
+                {
+                    <span class="dot success"></span> <span>Terminé</span>
+                }
+                else
+                {
+                    <span class="dot idle"></span> <span>Inactif</span>
+                }
+            </div>
+        </div>
+
+        <div class="progress-bar-wrap" aria-hidden="true">
+            <div class="progress-bar" style="width:@(CurrentProgress)%"></div>
+        </div>
+
+        <div class="stream-log">
+            @if (Logs == "")
+            {
+                <div class="empty">Aucune activité. Appuyez sur "Go" pour lancer la génération.</div>
+            }
+            else
+            {
+                @foreach (var line in Logs.Split('\n'))
+                {
+                    <div class="log-entry">@line</div>
+                }
+            }
+        </div>
+    </div>
+</div>
+@code {
+    private string Prompt { get; set; } = "";
+    private string Logs { get; set; } = "";
+    private int CurrentProgress { get; set; } = 0;
+    private CancellationTokenSource? cts;
+    private Task<Course>? createCourseTask { get; set; }
+
+    void Cancel()
+    {
+        cts?.Cancel();
+    }
+
+    void Clear()
+    {
+        Logs = "";
+        CurrentProgress = 0;
+        createCourseTask = null;
+    }
+
+    async Task Main()
+    {
+        cts = new CancellationTokenSource();
+
+        Console.WriteLine("Saisir la description globale du cours (ou coller) :");
+
+        var client = CreateOpenAIClientFromEnv();
+        var textWriter = new StreamLogWriter(line =>
+        {
+            Logs += line + "\n";
+            InvokeAsync(StateHasChanged);
+        }, Console.Out);
+        var orchestrator = new CourseOrchestrator(client, textWriter);
+        createCourseTask = orchestrator.BuildCourseAsync(Prompt, cts.Token);
+        var course = await createCourseTask;
+
+        string json = JsonSerializer.Serialize(course, new JsonSerializerOptions { WriteIndented = true });
+        Console.WriteLine("=== Cours généré ===");
+        Console.WriteLine(json);
+        Console.WriteLine("====================");
+        // Option : sauvegarder fichier, exporter markdown, etc.
+        await File.WriteAllTextAsync("course.json", json);
+    }
+
+    ChatClient CreateOpenAIClientFromEnv()
+    {
+        // Charger variables d'environnement
+        var endpoint = Configuration["AZURE_OPENAI_ENDPOINT"];
+        var apiKey = Configuration["AZURE_OPENAI_KEY"];
+        var deployment = Configuration["AZURE_OPENAI_CHAT_DEPLOYMENT"];
+
+        if (string.IsNullOrEmpty(endpoint))
+        {
+            throw new InvalidOperationException("AZURE_OPENAI_ENDPOINT is not set in configuration.");
+        }
+
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            throw new InvalidOperationException("AZURE_OPENAI_KEY is not set in configuration.");
+        }
+
+        if (string.IsNullOrEmpty(deployment))
+        {
+            throw new InvalidOperationException("AZURE_OPENAI_CHAT_DEPLOYMENT is not set in configuration.");
+        }
+
+        var clientBuilder = new AzureOpenAIClient(new Uri(endpoint), new AzureKeyCredential(apiKey));
+
+        var chatClient = clientBuilder.GetChatClient(deployment);
+
+        return chatClient;
+    }
+}

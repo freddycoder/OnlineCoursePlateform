@@ -1,0 +1,198 @@
+@page "/course/{courseName}"
+@using OnlineLearningPlatform.Models
+@using System.Text.Json
+@using Markdig
+@using Toolbelt.Blazor.SpeechSynthesis
+@inject SpeechSynthesis SpeechSynthesis
+
+<div class="card mb-3">
+	<div class="card-body">
+		<h2 class="card-title">@Course?.Title</h2>
+		<p class="card-text">
+			@{
+				var htmlDescription = Markdig.Markdown.ToHtml(Course?.Description ?? "");
+			}
+			@((MarkupString)htmlDescription)
+		</p>
+	</div>
+</div>
+
+@if (Course == null)
+{
+	<div class="alert alert-warning">Course not found.</div>
+	return;
+}
+else
+{
+	<h5 id="modules" class="ms-3 mt-3">Modules</h5>
+
+	<div class="d-flex">
+		<!-- Sidebar -->
+		@if (!sidebarCollapsed)
+		{
+
+			<ul class="list-group list-group-flush">
+				@for (int i = 0; i < Course.Modules.Count; i++)
+				{
+					var module = Course.Modules[i];
+					<li class="list-group-item list-group-item-action @(expandedModule == i ? "active" : "")">
+						<div @onclick="() => ToggleModule(module)" style="cursor:pointer;">
+							<strong>@module.Title</strong>
+							<p class="ms-2 text-muted">
+								@module.Description
+							</p>
+						</div>
+					</li>
+				}
+			</ul>
+		}
+	</div>
+
+	<h5 id="lessons" class="ms-3 mt-3">Lessons</h5>
+
+	<div class="d-flex">
+		@if (expandedModule.HasValue)
+		{
+			<ul class="list-group mt-2">
+				@for (int j = 0; j < Course.Modules[expandedModule.Value].Lessons.Count; j++)
+				{
+					var lesson = Course.Modules[expandedModule.Value].Lessons[j];
+					<li class="list-group-item list-group-item-action @(SelectedLesson == lesson ? "active" : "")"
+						style="cursor:pointer;" @onclick="() => SelectLesson(expandedModule.Value, lesson)">
+						@lesson.Title
+					</li>
+				}
+			</ul>
+		}
+	</div>
+	<!-- Main Content -->
+	<div class="flex-grow-1 p-4">
+		@if (SelectedLesson != null)
+		{
+			<div class="card">
+				<div class="card-body">
+					<h4 id="content">@SelectedLesson.Title</h4>
+					<p>@SelectedLesson.Summary</p>
+					<div><strong>Estimated Time:</strong> @SelectedLesson.EstimatedMinutes min</div>
+					<div class="mt-2">
+						<strong>Learning Objectives:</strong>
+						<ul>
+							@foreach (var obj in SelectedLesson.LearningObjectives)
+							{
+								<li>@obj</li>
+							}
+						</ul>
+					</div>
+					<div class="mt-2">
+						<strong>Content:
+							<button class="btn btn-sm btn-primary ms-2" @onclick="() => SpeakText(SelectedLesson.Content)">
+								Speak
+							</button>
+						</strong>
+						@{
+							var htmlContent = Markdig.Markdown.ToHtml(SelectedLesson.Content ?? "");
+						}
+						<p>@((MarkupString)htmlContent)</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Exercises Section -->
+			<div class="mt-4">
+				<h5>Exercises</h5>
+				@if (SelectedLesson.Exercises != null && SelectedLesson.Exercises.Count > 0)
+				{
+					@foreach (var exercise in SelectedLesson.Exercises)
+					{
+						<div class="card mb-3">
+							<div class="card-body">
+								<p><strong>Instruction:</strong> @exercise.Instruction</p>
+								<p><strong>Answer:</strong> @exercise.Answer</p>
+								<p><strong>Explanation:</strong> @exercise.Explanation</p>
+							</div>
+						</div>
+					}
+				}
+				else
+				{
+					<div>No exercises available for this lesson.</div>
+				}
+			</div>
+		}
+		else
+		{
+			<div class="alert alert-info">Select a lesson to view its content.</div>
+		}
+	</div>
+}
+
+@code {
+	private Course? Course;
+
+	[Parameter]
+	public string courseName { get; set; } = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (!string.IsNullOrEmpty(courseName))
+		{
+			var courseFilePath = Path.Combine("./Courses", $"{courseName}.json");
+			if (File.Exists(courseFilePath))
+			{
+				var json = await File.ReadAllTextAsync(courseFilePath);
+				Course = JsonSerializer.Deserialize<Course>(json);
+			}
+			else
+			{
+				Console.WriteLine($"Course file not found: {courseFilePath}");
+			}
+		}
+		else
+		{
+			Console.WriteLine("No course name provided in the URL.");
+		}
+	}
+
+	private bool sidebarCollapsed = false;
+	private int? expandedModule = 0;
+	private Module? SelectedModule = null;
+	private Lesson? SelectedLesson = null;
+
+	private void ToggleModule(Module module)
+	{
+		if (Course == null) return;
+		Console.WriteLine($"Toggling module {module.Title}...");
+		expandedModule = expandedModule == Course.Modules.IndexOf(module) ? null : Course.Modules.IndexOf(module);
+		SelectedModule = expandedModule.HasValue ? Course.Modules[expandedModule.Value] : null;
+		StateHasChanged();
+	}
+
+	private void SelectLesson(int moduleIdx, Lesson lesson)
+	{
+		Console.WriteLine($"Selecting lesson {lesson.Title} from module {moduleIdx}...");
+		SelectedLesson = lesson;
+		StateHasChanged();
+	}
+
+	private async Task SpeakText(string? text)
+	{
+		if (SpeechSynthesis == null)
+		{
+			Console.WriteLine("SpeechSynthesis service is not available.");
+			return;
+		}
+
+		if (!string.IsNullOrWhiteSpace(text))
+		{
+			var utterance = new SpeechSynthesisUtterance
+			{
+				Text = text,
+				Lang = "fr-FR", // BCP 47 language tag
+				Pitch = 1.0, // 0.0 ~ 2.0 (Default 1.0)
+				Rate = 1.0, // 0.1 ~ 10.0 (Default 1.0)
+				Volume = 1.0 // 0.0 ~ 1.0 (Default 1.0)
+			};
+			await SpeechSynthesis.SpeakAsync(utterance);
+		}
+	}
+}

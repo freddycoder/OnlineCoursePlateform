@@ -1,0 +1,156 @@
+﻿@page "/"
+@inject NavigationManager NavManager
+
+<PageTitle>Online Course Platform</PageTitle>
+
+<main class="home">
+    <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-content">
+            <h1 id="hero-title">Créez des cours engageants en quelques minutes — propulsés par notre orchestrateur LLM
+            </h1>
+            <p class="lead"> Transformez vos idées en parcours pédagogiques complets, structurés et adaptés à votre
+                public. Contenu multimodal, évaluations intelligentes, et personnalisation instantanée — sans effort
+                technique. </p>
+            <div class="cta-row">
+                <button class="btn-primary">Essayer gratuitement</button>
+                <button class="btn-outline">Voir les abonnements</button>
+            </div>
+            <ul class="trust-list" aria-hidden="false">
+                <li><strong>Gagnez du temps :</strong> générez un cours complet en minutes.</li>
+                <li><strong>Contrôle total :</strong> éditez, personnalisez, exportez.</li>
+                <li><strong>Sécurité & qualité :</strong> pipelines supervisés et options de vérification.</li>
+            </ul>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+            @* Placeholder pour illustration: SVG ou image *@  <svg width="420" height="300" viewBox="0 0 420 300"
+                fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="420" height="300" rx="12" fill="#f5f8ff" />
+                <g transform="translate(28,28)">
+                    <rect x="0" y="0" width="180" height="22" rx="6" fill="#e6f0ff" />
+                    <rect x="0" y="36" width="320" height="12" rx="6" fill="#fff" />
+                    <rect x="0" y="56" width="320" height="12" rx="6" fill="#fff" />
+                    <rect x="0" y="76" width="320" height="12" rx="6" fill="#fff" />
+                    <rect x="0" y="100" width="120" height="84" rx="8" fill="#dbefff" />
+                    <rect x="140" y="100" width="120" height="84" rx="8" fill="#dbefff" />
+                    <rect x="280" y="100" width="40" height="84" rx="8" fill="#eaf4ff" />
+                </g>
+            </svg> </div>
+    </section>
+    <section class="features" aria-labelledby="features-title">
+        <h2 id="features-title">Ce que vous obtenez</h2>
+        <div class="feature-grid">
+            <article class="feature">
+                <h3>Planification intelligente</h3>
+                <p>Générez une structure de cours adaptée aux objectifs pédagogiques, au niveau des apprenants et au
+                    format souhaité.</p>
+            </article>
+            <article class="feature">
+                <h3>Contenu multimodal</h3>
+                <p>Textes, quiz, exemples pratiques, et suggestions de médias — prêts à être personnalisés et exportés.
+                </p>
+            </article>
+            <article class="feature">
+                <h3>Orchestrateur LLM sécurisé</h3>
+                <p>Combinaison de modèles spécialisés et de règles métier pour garantir cohérence, exactitude et ton
+                    pédagogique.</p>
+            </article>
+            <article class="feature">
+                <h3>Contrôle & révision</h3>
+                <p>Flux de validation pour approuver ou corriger les propositions avant publication.</p>
+            </article>
+            <article class="feature">
+                <h3>Intégrations</h3>
+                <p>Export vers LMS, PDF, ou formats SCORM — ou importez un syllabus existant pour le réorganiser
+                    automatiquement.</p>
+            </article>
+            <article class="feature">
+                <h3>Analytique</h3>
+                <p>Suivez l'engagement et la performance des modules générés et affinez le contenu à partir de données
+                    réelles.</p>
+            </article>
+        </div>
+    </section>
+    <section class="how" aria-labelledby="how-title">
+        <h2 id="how-title">Comment ça marche — en 3 étapes</h2>
+        <ol class="steps">
+            <li>
+                <h4>1. Définissez votre objectif</h4>
+                <p>Choisissez le public, la durée et les compétences à atteindre. Le système propose une trame initiale.
+                </p>
+            </li>
+            <li>
+                <h4>2. Laissez l'orchestrateur créer</h4>
+                <p>Nos modules LLM collaborent pour générer des leçons, évaluations et supports multimédias cohérents.
+                </p>
+            </li>
+            <li>
+                <h4>3. Personnalisez et publiez</h4>
+                <p>Réglez le ton, ajoutez vos ressources, puis exportez vers votre LMS ou partagez un lien d’accès.</p>
+            </li>
+        </ol>
+    </section>
+    <section class="pricing" aria-labelledby="pricing-title">
+        <h2 id="pricing-title">Abonnements conçus pour les créateurs</h2>
+        <p class="pricing-intro">Commencez par un essai gratuit — choisissez ensuite la formule adaptée à votre volume
+            et vos besoins de gouvernance.</p>
+        <div class="plans">
+            <div class="plan plan-lite" aria-label="Plan Starter">
+                <h3>Starter</h3>
+                <p class="price">Gratuit</p>
+                <ul>
+                    <li>Essai limité — 3 cours</li>
+                    <li>Accès aux templates</li>
+                    <li>Export PDF</li>
+                </ul>
+                <button class="btn-secondary">Commencer</button>
+            </div>
+            <div class="plan plan-pro" aria-label="Plan Pro">
+                <h3>Pro</h3>
+                <p class="price">€29 / mois</p>
+                <ul>
+                    <li>Cours illimités</li>
+                    <li>Intégration LMS & export SCORM</li>
+                    <li>Contrôle qualité avancé</li>
+                </ul> <button class="btn-primary">S'abonner</button>
+            </div>
+            <div class="plan plan-enterprise" aria-label="Plan Enterprise">
+                <h3>Enterprise</h3>
+                <p class="price">Sur mesure</p>
+                <ul>
+                    <li>Orchestrateur dédié</li>
+                    <li>Audit & formation</li>
+                    <li>SLAs et hébergement privé</li>
+                </ul> <button class="btn-outline">Contacter les ventes</button>
+            </div>
+        </div>
+    </section>
+    <section class="testimonials" aria-labelledby="testimonials-title">
+        <h2 id="testimonials-title">Ils ont transformé leur démarche pédagogique</h2>
+        <div class="testi-list">
+            <blockquote> « Nous avons réduit le temps de préparation de cours de 70 %. Le contenu est pertinent et
+                facile à adapter. » <footer>— Marie Pelletier, formatrice indépendante</footer>
+            </blockquote>
+            <blockquote> « Grâce à la personnalisation automatique, nos apprenants sont plus engagés et progressent plus
+                vite. » <footer>— Équipe pédagogique, Institut Nova</footer>
+            </blockquote>
+        </div>
+    </section>
+    <section class="faq" aria-labelledby="faq-title">
+        <h2 id="faq-title">FAQ rapide</h2>
+        <details>
+            <summary>Puis-je modifier manuellement tout le contenu généré ?</summary>
+            <p>Oui. Tout contenu généré est entièrement éditable et exportable selon vos besoins.</p>
+        </details>
+        <details>
+            <summary>Comment garantissez-vous la qualité et la sécurité des contenus ?</summary>
+            <p>L'orchestrateur combine modèles, règles métiers et options de validation humaine pour limiter les erreurs
+                et s'adapter à vos contraintes.</p>
+        </details>
+    </section>
+    <footer class="site-footer">
+        <div>
+            <p>Prêt à créer votre premier cours ?</p> <button class="btn-primary">Démarrer l'essai gratuit</button>
+        </div>
+        <small>© @(DateTime.Now.Year) MonOrchestrateurLLM — Tous droits réservés</small>
+    </footer>
+</main>

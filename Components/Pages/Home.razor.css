@@ -1,0 +1,201 @@
+.home {
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #0f1724;
+    padding: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.hero h1 {
+    font-size: 2rem;
+    margin: 0 0 12px 0;
+}
+
+.lead {
+    color: #374151;
+    margin-bottom: 18px;
+}
+
+.cta-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #2563eb, #7c3aed);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background: #0ea5a4;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.trust-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: #475569;
+    margin-top: 10px;
+}
+
+.trust-list li {
+    margin-top: 6px;
+}
+
+.features {
+    margin: 40px 0;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.feature {
+    background: #ffffff;
+    border: 1px solid #e6eef8;
+    padding: 16px;
+    border-radius: 10px;
+}
+
+.feature h3 {
+    margin: 0 0 6px 0;
+}
+
+.how {
+    margin: 40px 0;
+}
+
+.steps {
+    counter-reset: step;
+    padding-left: 0;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+}
+
+.steps li {
+    background: #fbfdff;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #e6eef8;
+}
+
+.steps h4 {
+    margin: 0 0 6px 0;
+}
+
+.pricing {
+    margin: 40px 0;
+    text-align: center;
+}
+
+.plans {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.plan {
+    border-radius: 12px;
+    padding: 18px;
+    width: 260px;
+    background: #fff;
+    border: 1px solid #e6eef8;
+}
+
+.plan h3 {
+    margin-top: 0;
+}
+
+.price {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 8px 0;
+}
+
+.testimonials {
+    margin: 40px 0;
+}
+
+.testi-list {
+    display: grid;
+    gap: 12px;
+}
+
+blockquote {
+    background: #f8fafc;
+    padding: 12px;
+    border-left: 4px solid #c7ddff;
+    border-radius: 8px;
+    margin: 0;
+}
+
+.faq details {
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #eef2ff;
+    background: #fff;
+}
+
+.site-footer {
+    margin-top: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eef2ff;
+    padding-top: 18px;
+    color: #6b7280;
+}
+
+.site-footer button {
+    margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .plans {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .home {
+        padding: 18px;
+    }
+}
