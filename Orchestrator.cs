@@ -3,7 +3,7 @@ using System.Text.Json;
 using OnlineLearningPlatform.Models;
 using OpenAI.Chat;
 
-namespace OnlineCoursPlateforme;
+namespace OnlineCoursePlateform;
 
 public class CourseOrchestrator
 {

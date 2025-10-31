@@ -1,4 +1,4 @@
-using OnlineCoursPlateforme.Components;
+using OnlineCoursePlateform.Components;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
