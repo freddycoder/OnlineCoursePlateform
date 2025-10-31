@@ -1,0 +1,85 @@
+/* Styles personnalisés pour améliorer l'aspect visuel de CoursePage */
+
+.coursepage-container {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.coursepage-sidebar {
+    min-width: 280px;
+    max-width: 320px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 1rem;
+}
+
+.coursepage-main {
+    flex-grow: 1;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 2rem;
+}
+
+.coursepage-module-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.coursepage-lesson-list {
+    margin-top: 1rem;
+}
+
+.coursepage-lesson-item {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.coursepage-lesson-item.active {
+    background: #e3f2fd;
+    font-weight: 600;
+}
+
+.coursepage-exercise-card {
+    background: #f1f8e9;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+.coursepage-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1565c0;
+    margin-bottom: 1rem;
+}
+
+.coursepage-description {
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 2rem;
+}
+
+.coursepage-section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1976d2;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.coursepage-objectives {
+    background: #e3f2fd;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.coursepage-speak-btn {
+    margin-left: 1rem;
+}

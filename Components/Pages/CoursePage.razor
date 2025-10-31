@@ -5,16 +5,12 @@
 @using Toolbelt.Blazor.SpeechSynthesis
 @inject SpeechSynthesis SpeechSynthesis
 
-<div class="card mb-3">
-	<div class="card-body">
-		<h2 class="card-title">@Course?.Title</h2>
-		<p class="card-text">
-			@{
-				var htmlDescription = Markdig.Markdown.ToHtml(Course?.Description ?? "");
-			}
-			@((MarkupString)htmlDescription)
-		</p>
-	</div>
+<div class="coursepage-title">@Course?.Title</div>
+<div class="coursepage-description">
+	@{
+		var htmlDescription = Markdig.Markdown.ToHtml(Course?.Description ?? "");
+	}
+	@((MarkupString)htmlDescription)
 </div>
 
 @if (Course == null)
@@ -24,58 +20,54 @@
 }
 else
 {
-	<h5 id="modules" class="ms-3 mt-3">Modules</h5>
-
-	<div class="d-flex">
+	<div class="coursepage-container">
 		<!-- Sidebar -->
-		@if (!sidebarCollapsed)
-		{
+		<div class="coursepage-sidebar">
+			<div class="coursepage-section-title">Modules</div>
+			@if (!sidebarCollapsed)
+			{
+				<ul class="list-group list-group-flush">
+					@for (int i = 0; i < Course.Modules.Count; i++)
+					{
+						var module = Course.Modules[i];
+						<li class="list-group-item coursepage-module-title @(expandedModule == i ? "active" : "")">
+							<div @onclick="() => ToggleModule(module)" style="cursor:pointer;">
+								@module.Title
+								<div class="text-muted" style="font-size:0.95rem;">@module.Description</div>
+							</div>
 
-			<ul class="list-group list-group-flush">
-				@for (int i = 0; i < Course.Modules.Count; i++)
-				{
-					var module = Course.Modules[i];
-					<li class="list-group-item list-group-item-action @(expandedModule == i ? "active" : "")">
-						<div @onclick="() => ToggleModule(module)" style="cursor:pointer;">
-							<strong>@module.Title</strong>
-							<p class="ms-2 text-muted">
-								@module.Description
-							</p>
-						</div>
-					</li>
-				}
-			</ul>
-		}
-	</div>
-
-	<h5 id="lessons" class="ms-3 mt-3">Lessons</h5>
-
-	<div class="d-flex">
-		@if (expandedModule.HasValue)
-		{
-			<ul class="list-group mt-2">
-				@for (int j = 0; j < Course.Modules[expandedModule.Value].Lessons.Count; j++)
-				{
-					var lesson = Course.Modules[expandedModule.Value].Lessons[j];
-					<li class="list-group-item list-group-item-action @(SelectedLesson == lesson ? "active" : "")"
-						style="cursor:pointer;" @onclick="() => SelectLesson(expandedModule.Value, lesson)">
-						@lesson.Title
-					</li>
-				}
-			</ul>
-		}
-	</div>
-	<!-- Main Content -->
-	<div class="flex-grow-1 p-4">
-		@if (SelectedLesson != null)
-		{
-			<div class="card">
-				<div class="card-body">
-					<h4 id="content">@SelectedLesson.Title</h4>
-					<p>@SelectedLesson.Summary</p>
-					<div><strong>Estimated Time:</strong> @SelectedLesson.EstimatedMinutes min</div>
-					<div class="mt-2">
-						<strong>Learning Objectives:</strong>
+							@if (module == Course.Modules[expandedModule ?? 0])
+							{
+								<div class="coursepage-section-title" style="margin-top:2rem;">Leçons</div>
+								@if (expandedModule.HasValue)
+								{
+									<ul class="list-group coursepage-lesson-list">
+										@for (int j = 0; j < Course.Modules[expandedModule.Value].Lessons.Count; j++)
+										{
+											var lesson = Course.Modules[expandedModule.Value].Lessons[j];
+											<li class="list-group-item coursepage-lesson-item @(SelectedLesson == lesson ? "active" : "")"
+												@onclick="() => SelectLesson(expandedModule.Value, lesson)">
+												@lesson.Title
+											</li>
+										}
+									</ul>
+								}
+							}
+						</li>
+					}
+				</ul>
+			}
+		</div>
+		<!-- Main Content -->
+		<div class="coursepage-main">
+			@if (SelectedLesson != null)
+			{
+				<div>
+					<div class="coursepage-section-title">@SelectedLesson.Title</div>
+					<div class="mb-2">@SelectedLesson.Summary</div>
+					<div><strong>Durée estimée :</strong> @SelectedLesson.EstimatedMinutes min</div>
+					<div class="coursepage-objectives mt-3">
+						<strong>Objectifs d'apprentissage :</strong>
 						<ul>
 							@foreach (var obj in SelectedLesson.LearningObjectives)
 							{
@@ -83,46 +75,50 @@ else
 							}
 						</ul>
 					</div>
-					<div class="mt-2">
-						<strong>Content:
-							<button class="btn btn-sm btn-primary ms-2" @onclick="() => SpeakText(SelectedLesson.Content)">
-								Speak
+					<div class="mt-3">
+						<strong>Contenu :
+							<button class="btn btn-sm btn-primary coursepage-speak-btn"
+								@onclick="() => SpeakText(SelectedLesson.Content)">
+								Écouter
 							</button>
 						</strong>
 						@{
 							var htmlContent = Markdig.Markdown.ToHtml(SelectedLesson.Content ?? "");
 						}
-						<p>@((MarkupString)htmlContent)</p>
+						<div class="mt-2">@((MarkupString)htmlContent)</div>
 					</div>
 				</div>
-			</div>
-
-			<!-- Exercises Section -->
-			<div class="mt-4">
-				<h5>Exercises</h5>
-				@if (SelectedLesson.Exercises != null && SelectedLesson.Exercises.Count > 0)
-				{
-					@foreach (var exercise in SelectedLesson.Exercises)
+				<!-- Exercises Section -->
+				<div class="mt-4">
+					<div class="coursepage-section-title">Exercices</div>
+					@if (SelectedLesson.Exercises != null && SelectedLesson.Exercises.Count > 0)
 					{
-						<div class="card mb-3">
-							<div class="card-body">
-								<p><strong>Instruction:</strong> @exercise.Instruction</p>
-								<p><strong>Answer:</strong> @exercise.Answer</p>
-								<p><strong>Explanation:</strong> @exercise.Explanation</p>
+						@foreach (var exercise in SelectedLesson.Exercises)
+						{
+							<div class="coursepage-exercise-card">
+								<p><strong>Instruction :</strong> @exercise.Instruction</p>
+								<button class="btn btn-sm btn-secondary" @onclick="() => ToggleAnswer(exercise)">
+									@( exercise.ShowAnswer ? "Masquer la réponse" : "Afficher la réponse" )
+								</button>
+								@if (exercise.ShowAnswer)
+								{
+									<p><strong>Réponse :</strong> @exercise.Answer</p>
+								}
+								<p><strong>Explication :</strong> @exercise.Explanation</p>
 							</div>
-						</div>
+						}
 					}
-				}
-				else
-				{
-					<div>No exercises available for this lesson.</div>
-				}
-			</div>
-		}
-		else
-		{
-			<div class="alert alert-info">Select a lesson to view its content.</div>
-		}
+					else
+					{
+						<div>Aucun exercice disponible pour cette leçon.</div>
+					}
+				</div>
+			}
+			else
+			{
+				<div class="alert alert-info">Sélectionnez une leçon pour afficher son contenu.</div>
+			}
+		</div>
 	</div>
 }
 
@@ -194,5 +190,11 @@ else
 			};
 			await SpeechSynthesis.SpeakAsync(utterance);
 		}
+	}
+
+	private void ToggleAnswer(Exercise exercise)
+	{
+		exercise.ShowAnswer = !exercise.ShowAnswer;
+		StateHasChanged();
 	}
 }
