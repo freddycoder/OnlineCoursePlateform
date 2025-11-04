@@ -1,16 +1,26 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>c1734c54-0338-4416-914b-acfa4d3e00de</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.42.0" />
-    <PackageReference Include="Toolbelt.Blazor.SpeechSynthesis" Version="10.3.1" />
-    <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
+    <PackageReference
+      Include="Toolbelt.Blazor.SpeechSynthesis" Version="10.3.1" />
+    <PackageReference
+      Include="Azure.AI.OpenAI" Version="2.1.0" />
+    <PackageReference
+      Include="Microsoft.Extensions.Configuration" Version="9.0.10" />
+    <PackageReference
+      Include="Microsoft.AspNetCore.Components" Version="9.0.10" />
+    <PackageReference
+      Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
   </ItemGroup>
 
 </Project>

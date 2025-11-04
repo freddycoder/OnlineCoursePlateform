@@ -29,6 +29,7 @@ jobs:
         run: |
           ls -la
           dotnet publish ./OnlineCoursePlateform.csproj -f:net9.0 -c:Release -o:public -p:GHPages=true
+          ls -la public
 
       # Deploy the site
       - name: Deploy
