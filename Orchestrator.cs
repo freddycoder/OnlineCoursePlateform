@@ -10,6 +10,7 @@ public class CourseOrchestrator
     private readonly ChatClient _client;
     private readonly TextWriter _output;
     private readonly int _maxParallel = 1;
+    
     public CourseOrchestrator(ChatClient client, TextWriter output)
     {
         _client = client;
