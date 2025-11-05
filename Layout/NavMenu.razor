@@ -28,7 +28,7 @@
             </span>
             @foreach (var course in courses)
             {
-                <NavLink class="nav-link" href="@($"course/{course}")">
+                <NavLink class="nav-link" href="@($"Course/{course}")">
                     <span class="bi bi-book-fill-nav-menu" aria-hidden="true"></span> @course
                 </NavLink>
             }
@@ -37,14 +37,8 @@
 </div>
 
 @code {
-    private string[] courses = Array.Empty<string>();
-
-    protected override void OnInitialized()
-    {
-        courses = Directory.GetFiles("./Courses", "*.json")?
-            .Select(Path.GetFileNameWithoutExtension)
-            .Where(x => x != null)
-            .Select(x => x!)
-            .ToArray() ?? Array.Empty<string>();
-    }
+    private string[] courses = [
+        "DNSSEC",
+        "Équipe TI - ISO-9001"
+    ];
 }

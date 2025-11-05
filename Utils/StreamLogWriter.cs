@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace OnlineCoursePlateform.Utils;
+namespace OnlineCoursePlatform.Utils;
 
 public class StreamLogWriter : TextWriter
 {

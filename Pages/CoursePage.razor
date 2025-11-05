@@ -4,6 +4,7 @@
 @using Markdig
 @using Toolbelt.Blazor.SpeechSynthesis
 @inject SpeechSynthesis SpeechSynthesis
+@inject HttpClient Http
 
 <div class="coursepage-title">@Course?.Title</div>
 <div class="coursepage-description">
@@ -132,15 +133,15 @@ else
 	{
 		if (!string.IsNullOrEmpty(courseName))
 		{
-			var courseFilePath = Path.Combine("./Courses", $"{courseName}.json");
-			if (File.Exists(courseFilePath))
+			var content = await Http.GetStringAsync($"courses/{courseName}.json");
+			Course = JsonSerializer.Deserialize<Course>(content);
+			if (Course != null)
 			{
-				var json = await File.ReadAllTextAsync(courseFilePath);
-				Course = JsonSerializer.Deserialize<Course>(json);
+				Console.WriteLine($"Loaded course: {Course.Title}");
 			}
 			else
 			{
-				Console.WriteLine($"Course file not found: {courseFilePath}");
+				Console.WriteLine($"Course file not found: {courseName}");
 			}
 		}
 		else
