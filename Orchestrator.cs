@@ -1,6 +1,6 @@
 using System.Text;
 using System.Text.Json;
-using OnlineLearningPlatform.Models;
+using OnlineCoursePlatform.Models;
 using OpenAI.Chat;
 
 namespace OnlineCoursePlateform;

@@ -1,4 +1,4 @@
-namespace OnlineLearningPlatform.Models;
+namespace OnlineCoursePlatform.Models;
 
 public record Course(string Title, string Description, List<Module> Modules);
 public record Module(string Title, string Description, double EstimatedHours, List<Lesson> Lessons);
