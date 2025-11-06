@@ -14,10 +14,13 @@
 	@((MarkupString)htmlDescription)
 </div>
 
-@if (Course == null)
+@if (isLoading)
+{
+	<div>Loading course...</div>
+}
+else if (Course == null)
 {
 	<div class="alert alert-warning">Course not found.</div>
-	return;
 }
 else
 {
@@ -124,6 +127,7 @@ else
 }
 
 @code {
+	private bool isLoading = true;
 	private Course? Course;
 
 	[Parameter]

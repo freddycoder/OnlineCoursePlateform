@@ -1,0 +1,65 @@
+@using OnlineCoursePlatform.Models
+@inject LlmConfig Config
+@page "/config"
+
+<div class="config-form">
+    <h3>Configuration</h3>
+    @if (!string.IsNullOrEmpty(SuccessMessage))
+    {
+        <div class="success">@SuccessMessage</div>
+    }
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="error">@ErrorMessage</div>
+    }
+    <EditForm Model="formModel" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <div>
+            <label for="llm-url">LLM URL</label>
+            <InputText id="llm-url" @bind-Value="formModel.Url" />
+        </div>
+        <div>
+            <label for="api-key">API Key</label>
+            <InputText id="api-key" @bind-Value="formModel.ApiKey" type="password" />
+        </div>
+        <div>
+            <label for="deployment-name">Deployment Name</label>
+            <InputText id="deployment-name" @bind-Value="formModel.DeploymentName" />
+        </div>
+        <button type="submit">Save</button>
+    </EditForm>
+</div>
+
+@code {
+    private LlmConfig formModel = new();
+    private string? SuccessMessage;
+    private string? ErrorMessage;
+
+    protected override void OnInitialized()
+    {
+        // Copy current config to form model
+        formModel = new LlmConfig
+        {
+            Url = Config.Url,
+            ApiKey = Config.ApiKey,
+            DeploymentName = Config.DeploymentName
+        };
+    }
+
+    private void HandleValidSubmit()
+    {
+        try
+        {
+            Config.Url = formModel.Url;
+            Config.ApiKey = formModel.ApiKey;
+            Config.DeploymentName = formModel.DeploymentName;
+            SuccessMessage = "Configuration saved!";
+            ErrorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error saving configuration: {ex.Message}";
+            SuccessMessage = null;
+        }
+    }
+}

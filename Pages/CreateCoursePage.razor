@@ -4,7 +4,7 @@
 @using OnlineCoursePlatform.Models
 @using OpenAI.Chat
 @using OnlineCoursePlatform.Utils
-@inject IConfiguration Configuration
+@inject LlmConfig Configuration
 
 @page "/create-course"
 
@@ -26,11 +26,11 @@
         <div class="stream-header">
             <strong>Progression & interactions</strong>
             <div class="status">
-                @if (createCourseTask?.Status == TaskStatus.Running)
+                @if (createCourseTaskStatus == TaskStatus.Running)
                 {
                     <span class="dot running"></span> <span>En cours...</span>
                 }
-                else if (createCourseTask?.IsCompletedSuccessfully == true)
+                else if (createCourseTaskStatus == TaskStatus.RanToCompletion)
                 {
                     <span class="dot success"></span> <span>Terminé</span>
                 }
@@ -60,12 +60,32 @@
         </div>
     </div>
 </div>
+
+<!-- Generated Course JSON Section -->
+@if (CourseJson != "")
+{
+    <div class="course-json-section">
+        <h4>Cours généré (JSON)</h4>
+        <textarea class="prompt-box" readonly>@CourseJson</textarea>
+    </div>
+}
+
 @code {
     private string Prompt { get; set; } = "";
     private string Logs { get; set; } = "";
     private int CurrentProgress { get; set; } = 0;
+    private TaskStatus? createCourseTaskStatus { get; set; }
     private CancellationTokenSource? cts;
     private Task<Course>? createCourseTask { get; set; }
+    private string CourseJson { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        if (Configuration.Url == null || Configuration.ApiKey == null || Configuration.DeploymentName == null)
+        {
+            Logs = "Erreur : La configuration LLM n'est pas complète. Veuillez définir l'URL, la clé API et le nom du déploiement dans la page de /config.";
+        }
+    }
 
     void Cancel()
     {
@@ -81,34 +101,52 @@
 
     async Task Main()
     {
-        cts = new CancellationTokenSource();
-
-        Console.WriteLine("Saisir la description globale du cours (ou coller) :");
-
-        var client = CreateOpenAIClientFromEnv();
-        var textWriter = new StreamLogWriter(line =>
+        try 
         {
-            Logs += line + "\n";
-            InvokeAsync(StateHasChanged);
-        }, Console.Out);
-        var orchestrator = new CourseOrchestrator(client, textWriter);
-        createCourseTask = orchestrator.BuildCourseAsync(Prompt, cts.Token);
-        var course = await createCourseTask;
+            Logs = "";
+            CurrentProgress = 0;
+            createCourseTaskStatus = TaskStatus.Running;
+            cts = new CancellationTokenSource();
 
-        string json = JsonSerializer.Serialize(course, new JsonSerializerOptions { WriteIndented = true });
-        Console.WriteLine("=== Cours généré ===");
-        Console.WriteLine(json);
-        Console.WriteLine("====================");
-        // Option : sauvegarder fichier, exporter markdown, etc.
-        await File.WriteAllTextAsync("course.json", json);
+            Console.WriteLine("Saisir la description globale du cours (ou coller) :");
+
+            var client = CreateOpenAIClientFromEnv();
+            var textWriter = new StreamLogWriter(line =>
+            {
+                Logs += line + "\n";
+                InvokeAsync(StateHasChanged);
+            }, Console.Out);
+            var orchestrator = new CourseOrchestrator(client, textWriter);
+            createCourseTask = orchestrator.BuildCourseAsync(Prompt, cts.Token);
+            var course = await createCourseTask;
+
+            string json = JsonSerializer.Serialize(course, new JsonSerializerOptions { WriteIndented = true });
+            Console.WriteLine("=== Cours généré ===");
+            Console.WriteLine(json);
+            Console.WriteLine("====================");
+            // Option : sauvegarder fichier, exporter markdown, etc.
+            CourseJson = json;
+        }
+        catch (OperationCanceledException)
+        {
+            Logs += "Opération annulée par l'utilisateur.\n";
+        }
+        catch (Exception ex)
+        {
+            Logs += $"Erreur lors de la génération du cours : {ex.Message}\n";
+        }
+        finally
+        {
+            createCourseTaskStatus = TaskStatus.RanToCompletion;
+        }
     }
 
     ChatClient CreateOpenAIClientFromEnv()
     {
         // Charger variables d'environnement
-        var endpoint = Configuration["AZURE_OPENAI_ENDPOINT"];
-        var apiKey = Configuration["AZURE_OPENAI_KEY"];
-        var deployment = Configuration["AZURE_OPENAI_CHAT_DEPLOYMENT"];
+        var endpoint = Configuration.Url;
+        var apiKey = Configuration.ApiKey;
+        var deployment = Configuration.DeploymentName;
 
         if (string.IsNullOrEmpty(endpoint))
         {
