@@ -25,9 +25,11 @@ jobs:
         run: dotnet workload install wasm-tools
 
       # Publish the site
+      # Replace the <base href="/" /> in index.html if your site is hosted in a subdirectory
       - name: Publish
         run: |
           ls -la
+          sed -i 's|<base href="/" />|<base href="/OnlineCoursePlatform/" />|g' wwwroot/index.html
           dotnet publish ./OnlineCoursePlatform.csproj -f:net9.0 -c:Release -o:public -p:GHPages=true
           ls -la public
 

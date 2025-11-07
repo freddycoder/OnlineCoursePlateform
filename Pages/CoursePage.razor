@@ -138,6 +138,7 @@ else
 		if (string.IsNullOrEmpty(courseName))
 		{
 			Console.WriteLine("No course name provided in the URL.");
+			isLoading = false;
 			return;
 		}
 
@@ -156,10 +157,12 @@ else
 		if (Course != null)
 		{
 			Console.WriteLine($"Loaded course: {Course.Title}");
+			isLoading = false;
 		}
 		else
 		{
 			Console.WriteLine($"Course file not found: {courseName}");
+			isLoading = false;
 		}
 	}
 
