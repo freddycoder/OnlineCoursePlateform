@@ -27,10 +27,10 @@
             <span class="nav-link disabled">
                 <strong>Courses</strong>
             </span>
-            @foreach (var course in courses)
+            @foreach (var course in CourseList.Courses)
             {
-                <NavLink class="nav-link" href="@($"Course/{course}")">
-                    <span class="bi bi-book-fill-nav-menu" aria-hidden="true"></span> @course
+                <NavLink class="nav-link" href="@($"Course/{course.Title}")">
+                    <span class="bi bi-book-fill-nav-menu" aria-hidden="true"></span> @course.Title
                 </NavLink>
             }
         </div>
@@ -38,11 +38,6 @@
 </div>
 
 @code {
-    private string[] courses = [
-        "DNSSEC",
-        "Équipe TI - ISO-9001"
-    ];
-
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;

@@ -135,22 +135,31 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		if (!string.IsNullOrEmpty(courseName))
+		if (string.IsNullOrEmpty(courseName))
 		{
-			var content = await Http.GetStringAsync($"courses/{courseName}.json");
-			Course = JsonSerializer.Deserialize<Course>(content);
-			if (Course != null)
-			{
-				Console.WriteLine($"Loaded course: {Course.Title}");
-			}
-			else
-			{
-				Console.WriteLine($"Course file not found: {courseName}");
-			}
+			Console.WriteLine("No course name provided in the URL.");
+			return;
+		}
+
+		var course = CourseList.Courses.FirstOrDefault(c => c.Title == courseName);
+
+		if (course == null)
+		{
+			Console.WriteLine($"Course not found in CourseList: {courseName}");
+			isLoading = false;
+			return;
+		}
+
+		var content = await Http.GetStringAsync(course.Path);
+		Course = JsonSerializer.Deserialize<Course>(content);
+
+		if (Course != null)
+		{
+			Console.WriteLine($"Loaded course: {Course.Title}");
 		}
 		else
 		{
-			Console.WriteLine("No course name provided in the URL.");
+			Console.WriteLine($"Course file not found: {courseName}");
 		}
 	}
 
